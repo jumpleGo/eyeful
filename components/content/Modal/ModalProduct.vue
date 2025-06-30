@@ -19,9 +19,11 @@
 </template>
 <script lang="ts" setup>
 import {getImageByType, type ITypesCatalog} from "~/helpers/getImageByType";
+import {useProductsStore} from "~/store";
+import type {IProductItem} from "~/api/types";
+import {useModalStore} from "~/store/modal";
 
-defineProps<{
-  src: string,
+const props = defineProps<{
   title: string,
   type: string,
   category: ITypesCatalog,
@@ -36,6 +38,19 @@ const emit = defineEmits<{
 }>()
 
 const {isMobile} = useResponsive()
+const {lastShowItem} = storeToRefs(useProductsStore())
+
+onUnmounted(() => {
+  close()
+})
+
+const close = () => {
+  lastShowItem.value = {
+    ...props as IProductItem,
+    image: getImageByType(props.category)
+  }
+  useModalStore().startTimerShowRecommended()
+}
 </script>
 <style lang="scss" scoped>
 .content {

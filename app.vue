@@ -7,6 +7,9 @@
         <keep-alive>
           <NuxtPage  />
         </keep-alive>
+        <AppModal v-if="lastShowItem && isShowRecommended" @close="closeRecommended">
+          <ModalRecommended   />
+        </AppModal>
       </layout>
     </div>
     <OrderFlow :show-modal="isShowModal" @close="isShowModal = false" @rozn="roznZakaz" />
@@ -26,15 +29,22 @@ import {useProductsStore} from "~/store";
 import OrderFlow from "~/components/content/OrderFlow.vue";
 import {useOrderFlow} from "~/composables/useOrderFlow";
 import {useModalStore} from "~/store/modal";
+import ModalRecommended from "~/components/content/Modal/ModalRecommended.vue";
 const {showDescription, roznZakaz} = useOrderFlow()
 const {isLoading} = storeToRefs(useLoaderStore())
-const {count} = storeToRefs(useProductsStore())
-const {isShowModal} = storeToRefs(useModalStore())
+const {count, lastShowItem} = storeToRefs(useProductsStore())
+const {isShowModal, isShowRecommended} = storeToRefs(useModalStore())
 
 useAsyncData(async () => {
   count.value = await getAllCount()
 
 })
+
+const closeRecommended = () => {
+  isShowRecommended.value = false
+  lastShowItem.value = false
+}
+
 </script>
 
 <style lang="scss" scoped>
